@@ -61,9 +61,12 @@ func (p *Package) godefs(f *File, srcfile string) string {
 	for _, r := range f.Ref {
 		refName[r.Expr] = r.Name
 	}
-	for _, d := range f.AST.Decls {
+	declsRemove := make(map[int]string)
+	for i, d := range f.AST.Decls {
 		d, ok := d.(*ast.GenDecl)
 		if !ok || d.Tok != token.TYPE {
+			// record declaration we don't need
+			declsRemove[i] = ""
 			continue
 		}
 		for _, s := range d.Specs {
@@ -73,6 +76,13 @@ func (p *Package) godefs(f *File, srcfile string) string {
 				override[n.Mangle] = s.Name.Name
 			}
 		}
+	}
+	c := 0
+	for k := range declsRemove {
+		// delete declaration we don't need
+		k = k - c
+		f.AST.Decls = append(f.AST.Decls[:k], f.AST.Decls[k+1:]...) // expand the last array
+		c++
 	}
 
 	// Extend overrides using typedefs:
