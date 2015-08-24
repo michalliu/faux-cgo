@@ -49,6 +49,7 @@ func (p *Package) godefs(f *File, srcfile string) string {
 		}
 	}
 	for _, n := range f.Name {
+		//print("r.Expr", n.Go, "\n")
 		if s := override[n.Go]; s != "" {
 			override[n.Mangle] = s
 		}
@@ -72,6 +73,7 @@ func (p *Package) godefs(f *File, srcfile string) string {
 		for _, s := range d.Specs {
 			s := s.(*ast.TypeSpec)
 			n := refName[&s.Type]
+			//print(n.Mangle, "\n")
 			if n != nil && n.Mangle != "" {
 				override[n.Mangle] = s.Name.Name
 			}
