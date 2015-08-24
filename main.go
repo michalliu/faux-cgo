@@ -130,15 +130,17 @@ func usage() {
 }
 
 var ptrSizeMap = map[string]int64{
-	"386":   4,
-	"amd64": 8,
-	"arm":   4,
+	"386":     4,
+	"amd64":   8,
+	"arm":     4,
+	"mipso32": 4,
 }
 
 var intSizeMap = map[string]int64{
-	"386":   4,
-	"amd64": 8,
-	"arm":   4,
+	"386":     4,
+	"amd64":   8,
+	"arm":     4,
+	"mipso32": 4,
 }
 
 var cPrefix string
