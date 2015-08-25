@@ -11,8 +11,31 @@ import (
 	"go/printer"
 	"go/token"
 	"os"
+	"sort"
 	"strings"
 )
+
+func arrayRemove(source []ast.Decl, removal []int) []ast.Decl {
+	// result
+	var result []ast.Decl
+
+	// sort the removal indexes
+	sort.Sort(sort.IntSlice(removal))
+
+	// loop removal
+	for i, v := range removal {
+		// once at a time
+		v = v - i
+		// remove on element from array
+		// noted once you remove one element
+		// since the array.length can not change
+		// go will add one element to the end of the array
+		result = append(source[:v], source[v+1:]...)
+	}
+	// we know how musch data we need, remove the extra data
+	result = result[:len(source)-len(removal)]
+	return result
+}
 
 // godefs returns the output for -godefs mode.
 func (p *Package) godefs(f *File, srcfile string) string {
@@ -79,13 +102,13 @@ func (p *Package) godefs(f *File, srcfile string) string {
 			}
 		}
 	}
-	c := 0
+	removal := make([]int, 0)
 	for k := range declsRemove {
 		// delete declaration we don't need
-		k = k - c
-		f.AST.Decls = append(f.AST.Decls[:k], f.AST.Decls[k+1:]...) // expand the last array
-		c++
+		removal = append(removal, k)
 	}
+
+	f.AST.Decls = arrayRemove(f.AST.Decls, removal)
 
 	// Extend overrides using typedefs:
 	// If we know that C.xxx should format as T
